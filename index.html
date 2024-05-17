@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head >
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Indian Crop Yield Prediction</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <style>
+    body {
+    font-family: sans-serif;
+    /* Replace with path to your background image */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Semi-transparent black background */
+    color: white;
+    text-shadow: 0 0 0.2rem black;
+    /* Subtle text shadow */
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.btn-danger {
+    background-color: #0ca105;
+    /* Adjust red color as desired */
+    border-color: #0d8200;
+}
+
+.btn-danger:hover {
+    background-color: #098103;
+    border-color: #0d8200;
+}
+
+.predicted-yield {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background-color: rgba(12, 161, 5, 0.7);
+    color: #ffffff;
+}
+
+
+  </style>
+</head>
+
+<body background="{{ url_for('static', filename='gif.jpg') }}">
+  <div class="container">
+    <h1 class="text-center text-light">Indian Crop Yield Prediction</h1>
+
+    <form action="/predict" method="POST" class="mt-4">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="Year">Year</label>
+            <input type="number" class="form-control" name="Year" step="any" min="1990">
+          </div>
+          <br>
+          <div class="form-group">
+            <label for="avg_rainfall">Average Rainfall (mm)</label>
+            <input type="number" class="form-control" name="avg_rainfall" step="any">
+          </div>
+          <br>
+          <div class="form-group">
+            <label for="Avg_Temp">Average Temperature (°C)</label>
+            <input type="number" class="form-control" name="Avg_Temp" step="any">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="State">State</label>
+            <input type="text" class="form-control" name="State" id="stateInput" step="any">
+          </div>
+          <br>
+          <div class="form-group">
+            <label for="District">District</label>
+            <input type="text" class="form-control" name="District" id="districtInput" disabled="disabled">
+          </div>
+          <br>
+          <div class="form-group">
+            <label for="Crop">Crop</label>
+            <input type="text" class="form-control" name="Crop" step="any">
+          </div>
+        </div>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-danger btn-lg">Predict</button>
+    </form>
+    {% if val %}
+    <h2 class="text-center predicted-yield ">
+      Predicted Yield Production: <br>
+      <br>
+      {{ val }} Tonnes/Hectare
+    </h2>
+    {% endif %}
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- jQuery UI library -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script>
+    $(function () {
+      // State data (replace with your actual state-district data)
+      var states = {
+        "ANDAMAN AND NICOBAR ISLANDS": ['NICOBARS', 'NORTH AND MIDDLE ANDAMAN', 'SOUTH ANDAMANS', 'Andaman and Nicobar Islands'],
+        "ANDHRA PRADESH": ['ANANTAPUR', 'EAST GODAVARI', 'KRISHNA', 'VIZIANAGARAM', 'WEST GODAVARI', 'ADILABAD', 'CHITTOOR', 'GUNTUR', 'KADAPA', 'KARIMNAGAR', 'KHAMMAM', 'KURNOOL', 'MAHBUBNAGAR', 'MEDAK', 'NALGONDA', 'NIZAMABAD', 'PRAKASAM', 'RANGAREDDI', 'SPSR NELLORE', 'SRIKAKULAM', 'VISAKHAPATANAM', 'WARANGAL', 'HYDERABAD'],
+        "ASSAM": ['BARPETA', 'BONGAIGAON', 'CACHAR', 'DARRANG', 'DHEMAJI', 'DHUBRI', 'DIBRUGARH', 'DIMA HASAO', 'GOALPARA', 'GOLAGHAT', 'HAILAKANDI', 'JORHAT', 'KAMRUP', 'KARBI ANGLONG', 'KARIMGANJ', 'KOKRAJHAR', 'LAKHIMPUR', 'MARIGAON', 'NAGAON', 'NALBARI', 'SIVASAGAR', 'SONITPUR', 'TINSUKIA', 'BAKSA', 'CHIRANG', 'KAMRUP METRO', 'UDALGURI', 'BISWANATH', 'CHARAIDEO', 'HOJAI', 'MAJULI', 'SOUTH SALMARA MANCACHAR', 'WEST KARBI ANGLONG'],
+        "BIHAR": ['ARARIA', 'ARWAL', 'AURANGABAD', 'BANKA', 'BEGUSARAI', 'BHAGALPUR', 'BHOJPUR', 'BUXAR', 'DARBHANGA', 'GAYA', 'GOPALGANJ', 'JAMUI', 'JEHANABAD', 'KAIMUR (BHABUA)', 'KATIHAR', 'KHAGARIA', 'KISHANGANJ', 'LAKHISARAI', 'MADHEPURA', 'MADHUBANI', 'MUNGER', 'MUZAFFARPUR', 'NALANDA', 'NAWADA', 'PASHCHIM CHAMPARAN', 'PATNA', 'PURBI CHAMPARAN', 'PURNIA', 'ROHTAS', 'SAHARSA', 'SAMASTIPUR', 'SARAN', 'SHEIKHPURA', 'SHEOHAR', 'SITAMARHI', 'SIWAN', 'SUPAUL', 'VAISHALI', 'BOKARO', 'CHATRA', 'DEOGHAR', 'DHANBAD', 'DUMKA', 'EAST SINGHBUM', 'GARHWA', 'GIRIDIH', 'GODDA', 'GUMLA', 'HAZARIBAGH', 'JAMTARA', 'KHUNTI', 'KODERMA', 'LATEHAR', 'LOHARDAGA', 'PAKUR', 'PALAMU', 'RAMGARH', 'RANCHI', 'SAHEBGANJ', 'SERAIKELA-KHARSAWAN', 'SIMDEGA', 'WEST SINGHBHUM', 'CHANDIGARH', 'BALOD', 'BALODA BAZAR', 'BALRAMPUR', 'BASTAR', 'BEMETARA', 'BIJAPUR', 'BILASPUR', 'DANTEWADA', 'DHAMTARI', 'DURG', 'GARIYABAND', 'JANJGIR-CHAMPA', 'JASHPUR', 'KABIRDHAM', 'KANKER', 'KONDAGAON', 'KORBA', 'KOREA', 'MAHASAMUND', 'MUNGELI', 'NARAYANPUR', 'RAIGARH', 'RAIPUR', 'RAJNANDGAON', 'SUKMA', 'SURAJPUR', 'SURGUJA'],
+        "CHANDIGARH": ['Chandigarh'],
+        "CHHATTISGARH": ['BALOD', 'BALODA BAZAR', 'BALRAMPUR', 'BASTAR', 'BEMETARA', 'BIJAPUR', 'BILASPUR', 'DANTEWADA', 'DHAMTARI', 'DURG', 'GARIYABAND', 'JANJGIR-CHAMPA', 'JASHPUR', 'KABIRDHAM', 'KANKER', 'KONDAGAON', 'KORBA', 'KOREA', 'MAHASAMUND', 'MUNGELI', 'NARAYANPUR', 'RAIGARH', 'RAIPUR', 'RAJNANDGAON', 'SUKMA', 'SURAJPUR', 'SURGUJA'],
+        "DADRA AND NAGAR HAVELI AND DAMAN AND DIU": ['DADRA AND NAGAR HAVELI', 'DAMAN', 'DIU', 'Dadra and Nagar Haveli', 'Daman', 'Diu'],
+        "DAMAN AND DIU": ['DADRA AND NAGAR HAVELI', 'DAMAN', 'DIU', 'Dadra and Nagar Haveli', 'Daman', 'Diu'],
+        "DELHI": ['CENTRAL DELHI', 'EAST DELHI', 'NEW DELHI', 'NORTH DELHI', 'NORTH EAST DELHI', 'NORTH WEST DELHI', 'SOUTH DELHI', 'SOUTH EAST DELHI', 'SOUTH WEST DELHI', 'WEST DELHI', 'Delhi'],
+        "GOA": ['NORTH GOA', 'SOUTH GOA', 'North Goa', 'South Goa'],
+        "GUJARAT": ['AHMADABAD', 'AMRELI', 'ANAND', 'BANAS KANTHA', 'BHARUCH', 'BHAVNAGAR', 'DANG', 'DOHAD', 'GANDHINAGAR', 'JAMNAGAR', 'JUNAGADH', 'KACHCHH', 'KHEDA', 'MAHESANA', 'NARMADA', 'NAVSARI', 'PANCH MAHALS', 'PATAN', 'PORBANDAR', 'RAJKOT', 'SABAR KANTHA', 'SURAT', 'SURENDRANAGAR', 'TAPI', 'VADODARA', 'VALSAD', 'AMRELI', 'ANAND', 'ARVALLI', 'BOTAD', 'CHHOTA UDAIPUR', 'DEVBHUMI DWARKA', 'GIR SOMNATH', 'MAHISAGAR', 'MORBI', 'NARMADA', 'TAPOVAN', 'PORBANDAR', 'RAJKOT', 'SABARKANTHA', 'SURAT', 'TAPI', 'VADODARA', 'VALSAD'],
+        "HARYANA": ['AMBALA', 'BHIWANI', 'FARIDABAD', 'FATEHABAD', 'GURGAON', 'HISAR', 'JHAJJAR', 'JIND', 'KAITHAL', 'KARNAL', 'KURUKSHETRA', 'MAHENDRAGARH', 'PANCHKULA', 'PANIPAT', 'REWARI', 'ROHTAK', 'SIRSA', 'SONIPAT', 'YAMUNANAGAR'],
+        "HIMACHAL PRADESH": ['BILASPUR', 'CHAMBA', 'HAMIRPUR', 'KANGRA', 'KINNAUR', 'KULLU', 'LAHUL AND SPITI', 'MANDI', 'SHIMLA', 'SIRMAUR', 'SOLAN', 'UNA'],
+        "JAMMU AND KASHMIR": ['ANANTHNAG', 'BANDIPORA', 'BARAMULLA', 'BUDGAM', 'DODA', 'GANDERBAL', 'JAMMU', 'KARGIL', 'KATHUA', 'KISHTWAR', 'KULGAM', 'KUPWARA', 'POONCH', 'PULWAMA', 'RAJAURI', 'RAMBAN', 'REASI', 'SAMBA', 'SHOPIAN', 'SRINAGAR', 'UDHAMPUR'],
+        "JHARKHAND": ['BOKARO', 'CHATRA', 'DEOGHAR', 'DHANBAD', 'DUMKA', 'EAST SINGHBUM', 'GARHWA', 'GIRIDIH', 'GODDA', 'GUMLA', 'HAZARIBAGH', 'JAMTARA', 'KHUNTI', 'KODERMA', 'LATEHAR', 'LOHARDAGA', 'PAKUR', 'PALAMU', 'RAMGARH', 'RANCHI', 'SAHEBGANJ', 'SERAIKELA-KHARSAWAN', 'SIMDEGA', 'WEST SINGHBHUM'],
+        "KARNATAKA": ['BAGALKOT', 'BANGALORE RURAL', 'BELGAUM', 'BELLARY', 'BENGALURU URBAN', 'BIDAR', 'BIJAPUR', 'CHAMARAJANAGAR', 'CHIKBALLAPUR', 'CHIKMAGALUR', 'CHITRADURGA', 'DAKSHINA KANNADA', 'DAVANAGERE', 'DHARWAD', 'GADAG', 'GULBARGA', 'HASSAN', 'HAVERI', 'KODAGU', 'KOLAR', 'KOPPAL', 'MANDYA', 'MYSORE', 'RAICHUR', 'RAMANAGARA', 'SHIMOGA', 'TUMKUR', 'UDUPI', 'UTTARA KANNADA', 'YADGIR'],
+        "KERALA": ['ALAPPUZHA', 'ERNAKULAM', 'IDUKKI', 'KANNUR', 'KASARAGOD', 'KOLLAM', 'KOTTAYAM', 'KOZHIKODE', 'MALAPPURAM', 'PALAKKAD', 'PATHANAMTHITTA', 'THIRUVANANTHAPURAM', 'THRISSUR', 'WAYANAD'],
+        "LADAKH": ['KARGIL', 'LEH'],
+        "LAKSHADWEEP": ['Lakshadweep'],
+        "MADHYA PRADESH": ['AGAR MALWA', 'ALIRAJPUR', 'ANUPPUR', 'ASHOKNAGAR', 'BALAGHAT', 'BARWANI', 'BETUL', 'BHIND', 'BHOPAL', 'BURHANPUR', 'CHHATARPUR', 'CHHINDWARA', 'DAMOH', 'DATIA', 'DEWAS', 'DHAR', 'DINDORI', 'GUNA', 'GWALIOR', 'HARDA', 'HOSHANGABAD', 'INDORE', 'JABALPUR', 'JHABUA', 'KATNI', 'KHANDWA', 'KHARGONE', 'MANDLA', 'MANDSAUR', 'MORENA', 'NARSINGHPUR', 'NEEMUCH', 'PANNA', 'RAISEN', 'RAJGARH', 'RATLAM', 'REWA', 'SAGAR', 'SATNA', 'SEHORE', 'SEONI', 'SHAHDOL', 'SHAJAPUR', 'SHEOPUR', 'SHIVPURI', 'SIDHI', 'SINGRAULI', 'TIKAMGARH', 'UJJAIN', 'UMARIA', 'VIDISHA'],
+        "MAHARASHTRA": ['AHMADNAGAR', 'AKOLA', 'AMRAVATI', 'AURANGABAD', 'BEED', 'BHANDARA', 'BULDHANA', 'CHANDRAPUR', 'DHULE', 'GADCHIROLI', 'GONDIA', 'HINGOLI', 'JALGAON', 'JALNA', 'KOLHAPUR', 'LATUR', 'MUMBAI', 'MUMBAI SUBURBAN', 'NAGPUR', 'NANDED', 'NANDURBAR', 'NASHIK', 'OSMANABAD', 'PALGHAR', 'PARBHANI', 'PUNE', 'RAIGAD', 'RATNAGIRI', 'SANGLI', 'SATARA', 'SINDHUDURG', 'SOLAPUR', 'THANE', 'WARDHA', 'WASHIM', 'YAVATMAL'],
+        "MANIPUR": ['BISHNUPUR', 'CHANDEL', 'CHURACHANDPUR', 'IMPHAL EAST', 'IMPHAL WEST', 'SENAPATI', 'TAMENGLONG', 'THOUBAL', 'UKHRUL'],
+        "MEGHALAYA": ['EAST GARO HILLS', 'EAST JAINTIA HILLS', 'EAST KHASI HILLS', 'NORTH GARO HILLS', 'RI BHOI', 'SOUTH GARO HILLS', 'SOUTH WEST GARO HILLS', 'SOUTH WEST KHASI HILLS', 'WEST GARO HILLS', 'WEST JAINTIA HILLS', 'WEST KHASI HILLS'],
+        "MIZORAM": ['AIZAWL', 'CHAMPHAI', 'KOLASIB', 'LAWNGTLAI', 'LUNGLEI', 'MAMIT', 'SAIHA', 'SERCHHIP'],
+        "NAGALAND": ['DIMAPUR', 'KIPHIRE', 'KOHIMA', 'LONGLENG', 'MOKOKCHUNG', 'MON', 'PEREN', 'PHEK', 'TUENSANG', 'WOKHA', 'ZUNHEBOTO'],
+        "ODISHA": ['ANGUL', 'BALANGIR', 'BALESHWAR', 'BARGARH', 'BHADRAK', 'BOUDH', 'CUTTACK', 'DEOGARH', 'DHENKANAL', 'GAJAPATI', 'GANJAM', 'JAGATSINGHAPUR', 'JAJAPUR', 'JHARSUGUDA', 'KALAHANDI', 'KANDHAMAL', 'KENDRAPARA', 'KENDUJHAR', 'KHORDHA', 'KORAPUT', 'MALKANGIRI', 'MAYURBHANJ', 'NABARANGPUR', 'NAYAGARH', 'NUAPADA', 'PURI', 'RAYAGADA', 'SAMBALPUR', 'SONEPUR', 'SUNDARGARH'],
+        "PUDUCHERRY": ['KARAIKAL', 'MAHE', 'PONDICHERRY', 'YANAM'],
+        "PUNJAB": ['AMRITSAR', 'BARNALA', 'BATHINDA', 'FARIDKOT', 'FATEHGARH SAHIB', 'FAZILKA', 'FIROZPUR', 'GURDASPUR', 'HOSHIARPUR', 'JALANDHAR', 'KAPURTHALA', 'LUDHIANA', 'MANSA', 'MOGA', 'MUKTSAR', 'NAWANSHAHR', 'PATHANKOT', 'PATIALA', 'RUPNAGAR', 'SANGRUR', 'SHAHEED BHAGAT SINGH NAGAR', 'SAS NAGAR', 'SRI MUKTSAR SAHIB', 'TARAN TARAN'],
+        "RAJASTHAN": ['AJMER', 'ALWAR', 'BANSWARA', 'BARAN', 'BARMER', 'BHARATPUR', 'BHILWARA', 'BIKANER', 'BUNDI', 'CHITTORGARH', 'CHURU', 'DAUSA', 'DHOLPUR', 'DUNGARPUR', 'GANGANAGAR', 'HANUMANGARH', 'JAIPUR', 'JAISALMER', 'JALORE', 'JHALAWAR', 'JHUNJHUNU', 'JODHPUR', 'KARAULI', 'KOTA', 'NAGAUR', 'PALI', 'PRATAPGARH', 'RAJSAMAND', 'SAWAI MADHOPUR', 'SIKAR', 'SIROHI', 'TONK', 'UDAIPUR'],
+        "SIKKIM": ['EAST SIKKIM', 'NORTH SIKKIM', 'SOUTH SIKKIM', 'WEST SIKKIM'],
+        "TAMIL NADU": ['ARIYALUR', 'COIMBATORE', 'CUDDALORE', 'DHARMAPURI', 'DINDIGUL', 'ERODE', 'KANCHIPURAM', 'KANNIYAKUMARI', 'KARUR', 'KRISHNAGIRI', 'MADURAI', 'NAGAPATTINAM', 'NAMAKKAL', 'PERAMBALUR', 'PUDUKKOTTAI', 'RAMANATHAPURAM', 'SALEM', 'SIVAGANGA', 'THANJAVUR', 'THENI', 'THIRUVALLUR', 'THIRUVANNAMALAI', 'THIRUVARUR', 'TIRUCHIRAPPALLI', 'TIRUNELVELI', 'TIRUPPUR', 'TIRUVANNAMALAI', 'TUTICORIN', 'VELLORE', 'VILLUPURAM', 'VIRUDHUNAGAR', 'THE NILGIRIS'],
+        "TELANGANA": ['ADILABAD', 'BHADRADRI KOTHAGUDEM', 'HYDERABAD', 'JAGTIAL', 'JANGAON', 'JAYASHANKAR BHUPALAPALLY', 'JOGLULAMBA GADWAL', 'KAMAREDDY', 'KARIMNAGAR', 'KHAMMAM', 'KOMARAM BHEEM ASIFABAD', 'MAHABUBABAD', 'MAHBUBNAGAR', 'MANCHERIAL', 'MEDAK', 'MEDCHAL MALKAJGIRI', 'NAGARKURNOOL', 'NALGONDA', 'NIRMAL', 'NIZAMABAD', 'PEDDAPALLI', 'RAJANNA SIRCILLA', 'RANGA REDDY', 'SANGAREDDY', 'SIDDIPET', 'SURYAPET', 'VIKARABAD', 'WANAPARTHY', 'WARANGAL RURAL', 'WARANGAL URBAN', 'YADADRI BHUVANAGIRI'],
+        "TRIPURA": ['DHALAI', 'GOMATI', 'KHOWAI', 'NORTH TRIPURA', 'SEPAHIJALA', 'SOUTH TRIPURA', 'UNAKOTI', 'WEST TRIPURA'],
+        "UTTAR PRADESH": ['AGRA', 'ALIGARH', 'ALLAHABAD', 'AMBEDKAR NAGAR', 'AMETHI', 'AMROHA', 'AURAIYA', 'AZAMGARH', 'BAGHPAT', 'BAHRAICH', 'BALLIA', 'BALRAMPUR', 'BANDA', 'BARABANKI', 'BAREILLY', 'BASTI', 'BIJNOR', 'BUDAUN', 'BULANDSHAHR', 'CHANDAULI', 'CHITRAKOOT', 'DEORIA', 'ETAH', 'ETAWAH', 'FAIZABAD', 'FARRUKHABAD', 'FATEHPUR', 'FIROZABAD', 'GAUTAM BUDDHA NAGAR', 'GHAZIABAD', 'GHAZIPUR', 'GONDA', 'GORAKHPUR', 'HAPUR', 'HARDOI', 'HATHRAS', 'JALAUN', 'JAUNPUR', 'JHANSI', 'KANNAUJ', 'KANPUR DEHAT', 'KANPUR NAGAR', 'KASGANJ', 'KAUSHAMBI', 'KHERI', 'KUSHINAGAR', 'LALITPUR', 'LUCKNOW', 'MAHARAJGANJ', 'MAHOBA', 'MAINPURI', 'MATHURA', 'MAU', 'MEERUT', 'MIRZAPUR', 'MORADABAD', 'MUZAFFARNAGAR', 'PILIBHIT', 'PRATAPGARH', 'RAE BARELI', 'RAMPUR', 'SAHARANPUR', 'SAMBHAL', 'SANT KABEER NAGAR', 'SANT RAVIDAS NAGAR', 'SHAHJAHANPUR', 'SHAMLI', 'SHRAVASTI', 'SIDDHARTH NAGAR', 'SITAPUR', 'SONBHADRA', 'SULTANPUR', 'UNNAO', 'VARANASI'],
+        "UTTARAKHAND": ['ALMORA', 'BAGESHWAR', 'CHAMOLI', 'CHAMPAWAT', 'DEHRADUN', 'HARIDWAR', 'NAINITAL', 'PAURI GARHWAL', 'PITHORAGARH', 'RUDRA PRAYAG', 'TEHRI GARHWAL', 'UDHAM SINGH NAGAR', 'UTTARKASHI'],
+        "WEST BENGAL": ['ALIPURDUAR', 'BANKURA', 'BIRBHUM', 'COOCHBEHAR', 'DARJEELING', 'DINAJPUR DAKSHIN', 'DINAJPUR UTTAR', 'HOOGHLY', 'HOWRAH', 'JALPAIGURI', 'JHARGRAM', 'KALIMPONG', 'KOLKATA', 'MALDAH', 'MEDINIPUR EAST', 'MEDINIPUR WEST', 'MURSHIDABAD', 'NADIA', 'PURULIA', '24 PARGANAS NORTH', '24 PARGANAS SOUTH', 'PASCHIM BARDHAMAN', 'PURBA BARDHAMAN'],
+      };
+
+
+      // Enable autocomplete for State input
+      $("#stateInput").autocomplete({
+        source: Object.keys(states) // Use state names as source
+      });
+
+      // Function to update district options based on selected state
+      function updateDistrictOptions() {
+        var selectedState = $("#stateInput").val();
+        if (selectedState && states[selectedState]) {
+          $("#districtInput").prop("disabled", false); // Enable district input
+          $("#districtInput").autocomplete({
+            source: states[selectedState] // Use districts of selected state
+          });
+        } else {
+          $("#districtInput").prop("disabled", true); // Disable district input
+          $("#districtInput").val(""); // Clear district value
+          $("#districtInput").autocomplete("destroy"); // Destroy existing autocomplete
+        }
+      }
+
+      // Update district options on state selection change
+      $("#stateInput").change(updateDistrictOptions);
+
+      // Initial update (in case state is pre-selected)
+      updateDistrictOptions();
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
